@@ -5,11 +5,15 @@ import { ElMessageBox, ElMessage, ElNotification } from 'element-plus'
 import ReservationDashboard from '@/components/reservations/ReservationDashboard.vue'
 import ReservationForm from '@/components/reservations/ReservationForm.vue'
 import ReservationTable from '@/components/reservations/ReservationTable.vue'
+import api from '@/api/axios'
+
 
 const store = useReservationStore()
 
 const search = ref('')
 const statusFilter = ref('')
+const cabins = ref([])
+
 
 const filteredReservations = computed(() => {
   return store.reservations.filter((reservation) => {
@@ -33,7 +37,7 @@ const form = reactive({
   guest_name: '',
   guest_email: '',
   guest_phone: '',
-  cabin_name: '',
+  cabin_id: null,
   check_in: '',
   check_out: '',
   guests: 1,
@@ -43,15 +47,18 @@ const form = reactive({
 
 const errors = reactive({})
 
-onMounted(() => {
+onMounted(async () => {
   store.fetchReservations()
+
+  const response = await api.get('/cabins')
+  cabins.value = response.data
 })
 
 const resetForm = () => {
   form.guest_name = ''
   form.guest_email = ''
   form.guest_phone = ''
-  form.cabin_name = ''
+  form.cabin_id = null
   form.check_in = ''
   form.check_out = ''
   form.guests = 1
@@ -98,7 +105,7 @@ const editReservation = (reservation) => {
   form.guest_name = reservation.guest_name
   form.guest_email = reservation.guest_email
   form.guest_phone = reservation.guest_phone
-  form.cabin_name = reservation.cabin_name
+  form.cabin_id = reservation.cabin_id
   form.check_in = reservation.check_in
   form.check_out = reservation.check_out
   form.guests = reservation.guests
@@ -172,11 +179,12 @@ const activeReservations = computed(() => {
     />
 
     <ReservationForm
-        :form="form"
-        :errors="errors"
-        :editing-id="editingId"
-        @submit="submitForm"
-        @reset="resetForm"
+      :form="form"
+      :errors="errors"
+      :editing-id="editingId"
+      :cabins="cabins"
+      @submit="submitForm"
+      @reset="resetForm"
     />
 
     <hr style="margin: 40px 0" />
