@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('reservations', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('cabin_id')->constrained()->cascadeOnDelete();
             $table->string('guest_name');
             $table->string('guest_email');
             $table->string('guest_phone');
-            $table->string('cabin_name');
             $table->date('check_in');
             $table->date('check_out');
             $table->integer('guests');
