@@ -3,6 +3,8 @@ defineProps({
   form: Object,
   errors: Object,
   editingId: [Number, null],
+  cabins: Array,
+
 })
 
 defineEmits(['submit', 'reset'])
@@ -29,8 +31,19 @@ defineEmits(['submit', 'reset'])
         <el-input v-model="form.guest_phone" />
       </el-form-item>
 
-      <el-form-item label="Cabaña" :error="errors.cabin_name?.[0]">
-        <el-input v-model="form.cabin_name" placeholder="Ej: Cabaña 1" />
+      <el-form-item label="Cabaña" :error="errors.cabin_id?.[0]">
+        <el-select
+          v-model="form.cabin_id"
+          placeholder="Seleccionar cabaña"
+          style="width: 100%"
+        >
+          <el-option
+            v-for="cabin in cabins"
+            :key="cabin.id"
+            :label="`${cabin.name} (${cabin.capacity} personas)`"
+            :value="cabin.id"
+          />
+        </el-select>
       </el-form-item>
 
       <el-form-item label="Fecha de ingreso" :error="errors.check_in?.[0]">
