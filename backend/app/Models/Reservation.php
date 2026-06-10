@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Cabin;
 
 class Reservation extends Model
 {
@@ -10,11 +11,15 @@ class Reservation extends Model
         'guest_name',
         'guest_email',
         'guest_phone',
-        'cabin_name',
+        'cabin_id',
         'check_in',
         'check_out',
         'guests',
         'status',
         'notes',
     ];
+
+    public function cabin() {
+        return $this->belongsTo(Cabin::class);
+    }
 }

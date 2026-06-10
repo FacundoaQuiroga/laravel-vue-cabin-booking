@@ -13,7 +13,8 @@ class ReservationController extends Controller
      */
     public function index()
     {
-        return Reservation::latest()->get();
+        return Reservation::with('cabin')->latest()->get();
+
     }
 
     /**
@@ -22,10 +23,10 @@ class ReservationController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
+            'cabin_id' => 'required|exists:cabins,id',
             'guest_name' => 'required|string|max:255',
             'guest_email' => 'required|email',
             'guest_phone' => 'required|string|max:50',
-            'cabin_name' => 'required|string|max:255',
             'check_in' => 'required|date',
             'check_out' => 'required|date|after:check_in',
             'guests' => 'required|integer|min:1',
@@ -33,7 +34,7 @@ class ReservationController extends Controller
             'notes' => 'nullable|string',
         ]);
 
-        $overlap = Reservation::where('cabin_name', $request->cabin_name)
+        $overlap = Reservation::where('cabin_id', $request->cabin_id)
             ->where('check_in', '<', $request->check_out)
             ->where('check_out', '>', $request->check_in)
             ->exists();
@@ -56,7 +57,7 @@ class ReservationController extends Controller
      */
     public function show(Reservation $reservation)
     {
-        return $reservation;
+        return $reservation->load('cabin');
     }
 
     /**
@@ -65,10 +66,10 @@ class ReservationController extends Controller
     public function update(Request $request, Reservation $reservation)
     {
         $data = $request->validate([
+            'cabin_id' => 'required|exists:cabins,id',
             'guest_name' => 'required|string|max:255',
             'guest_email' => 'required|email',
             'guest_phone' => 'required|string|max:50',
-            'cabin_name' => 'required|string|max:255',
             'check_in' => 'required|date',
             'check_out' => 'required|date|after:check_in',
             'guests' => 'required|integer|min:1',
@@ -76,7 +77,7 @@ class ReservationController extends Controller
             'notes' => 'nullable|string',
         ]);
 
-        $overlap = Reservation::where('cabin_name', $request->cabin_name)
+        $overlap = Reservation::where('cabin_id', $request->cabin_id)
             ->where('id', '!=', $reservation->id)
             ->where('check_in', '<', $request->check_out)
             ->where('check_out', '>', $request->check_in)
