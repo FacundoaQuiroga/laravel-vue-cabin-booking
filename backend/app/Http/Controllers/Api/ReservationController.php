@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Reservation;
+use App\Models\Cabin;
 
 class ReservationController extends Controller
 {
@@ -22,6 +23,17 @@ class ReservationController extends Controller
      */
     public function store(Request $request)
     {
+        $cabin = Cabin::findOrFail($request->cabin_id);
+
+        if ($request->guests > $cabin->capacity) {
+            return response()->json([
+                'message' => 'La cantidad de huéspedes supera la capacidad de la cabaña.',
+                'errors' => [
+                    'guests' => ['La cantidad de huéspedes supera la capacidad de la cabaña.'],
+                ],
+            ], 422);
+        }
+
         $data = $request->validate([
             'cabin_id' => 'required|exists:cabins,id',
             'guest_name' => 'required|string|max:255',
@@ -76,6 +88,17 @@ class ReservationController extends Controller
             'status' => 'nullable|string|max:50',
             'notes' => 'nullable|string',
         ]);
+
+        $cabin = Cabin::findOrFail($request->cabin_id);
+
+        if ($request->guests > $cabin->capacity) {
+            return response()->json([
+                'message' => 'La cantidad de huéspedes supera la capacidad de la cabaña.',
+                'errors' => [
+                    'guests' => ['La cantidad de huéspedes supera la capacidad de la cabaña.'],
+                ],
+            ], 422);
+        }
 
         $overlap = Reservation::where('cabin_id', $request->cabin_id)
             ->where('id', '!=', $reservation->id)
