@@ -9,7 +9,17 @@ defineEmits(['edit', 'delete', 'change-status'])
 <template>
   <el-table :data="reservations" style="width: 100%">
     <el-table-column prop="guest_name" label="Huésped" width="180" />
-    <el-table-column prop="cabin_name" label="Cabaña" width="180" />
+    <el-table-column label="Cabaña" width="220">
+      <template #default="scope">
+        <div>
+          <strong>{{ scope.row.cabin?.name || 'Sin cabaña' }}</strong>
+          <br />
+          <small v-if="scope.row.cabin">
+            {{ scope.row.cabin.capacity }} personas
+          </small>
+        </div>
+      </template>
+    </el-table-column>
     <el-table-column prop="check_in" label="Ingreso" width="120" />
     <el-table-column prop="check_out" label="Salida" width="120" />
     <el-table-column prop="guests" label="Huéspedes" width="100" />
