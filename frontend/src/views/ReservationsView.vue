@@ -17,9 +17,14 @@ const cabins = ref([])
 
 const filteredReservations = computed(() => {
   return store.reservations.filter((reservation) => {
-    const matchesSearch = reservation.guest_name
-      .toLowerCase()
-      .includes(search.value.toLowerCase())
+    const term = search.value.toLowerCase()
+
+    const guestName = reservation.guest_name?.toLowerCase() || ''
+    const cabinName = reservation.cabin?.name?.toLowerCase() || ''
+
+    const matchesSearch =
+      guestName.includes(term) ||
+      cabinName.includes(term)
 
     const matchesStatus = statusFilter.value
       ? reservation.status === statusFilter.value
