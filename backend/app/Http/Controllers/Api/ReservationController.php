@@ -22,47 +22,56 @@ class ReservationController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
-    {
-        $cabin = Cabin::findOrFail($request->cabin_id);
+{
+    $data = $request->validate([
+        'cabin_id' => 'required|exists:cabins,id',
+        'guest_name' => 'required|string|max:255',
+        'guest_email' => 'required|email',
+        'guest_phone' => 'required|string|max:50',
+        'check_in' => 'required|date',
+        'check_out' => 'required|date|after:check_in',
+        'guests' => 'required|integer|min:1',
+        'status' => 'nullable|string|max:50',
+        'notes' => 'nullable|string',
+    ]);
 
-        if ($request->guests > $cabin->capacity) {
-            return response()->json([
-                'message' => 'La cantidad de huéspedes supera la capacidad de la cabaña.',
-                'errors' => [
-                    'guests' => ['La cantidad de huéspedes supera la capacidad de la cabaña.'],
-                ],
-            ], 422);
-        }
+    $cabin = Cabin::findOrFail($data['cabin_id']);
 
-        $data = $request->validate([
-            'cabin_id' => 'required|exists:cabins,id',
-            'guest_name' => 'required|string|max:255',
-            'guest_email' => 'required|email',
-            'guest_phone' => 'required|string|max:50',
-            'check_in' => 'required|date',
-            'check_out' => 'required|date|after:check_in',
-            'guests' => 'required|integer|min:1',
-            'status' => 'nullable|string|max:50',
-            'notes' => 'nullable|string',
-        ]);
-
-        $overlap = Reservation::where('cabin_id', $request->cabin_id)
-            ->where('check_in', '<', $request->check_out)
-            ->where('check_out', '>', $request->check_in)
-            ->exists();
-
-        if ($overlap) {
-            return response()->json([
-                'message' => 'La cabaña ya está reservada en esas fechas.',
-                'errors' => [
-                    'check_in' => ['La cabaña ya está reservada en esas fechas.'],
-                    'check_out' => ['La cabaña ya está reservada en esas fechas.'],
-                ],
-            ], 422);
-        }
-
-        return Reservation::create($data);
+    if ($data['guests'] > $cabin->capacity) {
+        return response()->json([
+            'message' => 'La cantidad de huéspedes supera la capacidad de la cabaña.',
+            'errors' => [
+                'guests' => ['La cantidad de huéspedes supera la capacidad de la cabaña.'],
+            ],
+        ], 422);
     }
+
+    if ($cabin->status !== 'available') {
+        return response()->json([
+            'message' => 'La cabaña seleccionada no está disponible.',
+            'errors' => [
+                'cabin_id' => ['La cabaña seleccionada no está disponible.'],
+            ],
+        ], 422);
+    }
+
+    $overlap = Reservation::where('cabin_id', $data['cabin_id'])
+        ->where('check_in', '<', $data['check_out'])
+        ->where('check_out', '>', $data['check_in'])
+        ->exists();
+
+    if ($overlap) {
+        return response()->json([
+            'message' => 'La cabaña ya está reservada en esas fechas.',
+            'errors' => [
+                'check_in' => ['La cabaña ya está reservada en esas fechas.'],
+                'check_out' => ['La cabaña ya está reservada en esas fechas.'],
+            ],
+        ], 422);
+    }
+
+return Reservation::create($data)->load('cabin');
+}
 
     /**
      * Display the specified resource.
@@ -89,9 +98,9 @@ class ReservationController extends Controller
             'notes' => 'nullable|string',
         ]);
 
-        $cabin = Cabin::findOrFail($request->cabin_id);
+        $cabin = Cabin::findOrFail($data['cabin_id']);
 
-        if ($request->guests > $cabin->capacity) {
+        if ($data['guests'] > $cabin->capacity) {
             return response()->json([
                 'message' => 'La cantidad de huéspedes supera la capacidad de la cabaña.',
                 'errors' => [
@@ -100,10 +109,19 @@ class ReservationController extends Controller
             ], 422);
         }
 
-        $overlap = Reservation::where('cabin_id', $request->cabin_id)
+        if ($cabin->status !== 'available') {
+            return response()->json([
+                'message' => 'La cabaña seleccionada no está disponible.',
+                'errors' => [
+                    'cabin_id' => ['La cabaña seleccionada no está disponible.'],
+                ],
+            ], 422);
+        }
+
+        $overlap = Reservation::where('cabin_id', $data['cabin_id'])
             ->where('id', '!=', $reservation->id)
-            ->where('check_in', '<', $request->check_out)
-            ->where('check_out', '>', $request->check_in)
+            ->where('check_in', '<', $data['check_out'])
+            ->where('check_out', '>', $data['check_in'])
             ->exists();
 
         if ($overlap) {
@@ -118,7 +136,7 @@ class ReservationController extends Controller
 
         $reservation->update($data);
 
-        return $reservation;
+        return $reservation->load('cabin');
     }
 
     /**
