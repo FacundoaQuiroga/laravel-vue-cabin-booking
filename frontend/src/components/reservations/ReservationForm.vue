@@ -42,6 +42,7 @@ defineEmits(['submit', 'reset'])
             :key="cabin.id"
             :label="`${cabin.name} (${cabin.capacity} personas)`"
             :value="cabin.id"
+            :disabled="cabin.status !== 'available'"
           />
         </el-select>
       </el-form-item>
