@@ -4,7 +4,7 @@ defineProps({
   errors: Object,
   editingId: [Number, null],
   cabins: Array,
-
+  selectedCabin: Object,
 })
 
 defineEmits(['submit', 'reset'])
@@ -67,7 +67,10 @@ defineEmits(['submit', 'reset'])
       </el-form-item>
 
       <el-form-item label="Cantidad de huéspedes" :error="errors.guests?.[0]">
-        <el-input-number v-model="form.guests" :min="1" />
+        <el-input-number v-model="form.guests" :min="1" :max="selectedCabin?.capacity" />
+        <div v-if="selectedCabin" style="font-size: 12px; color: #666; margin-top: 6px">
+          Capacidad máxima: {{ selectedCabin.capacity }} personas
+        </div>
       </el-form-item>
 
       <el-form-item label="Notas">

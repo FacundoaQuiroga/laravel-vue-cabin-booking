@@ -1,5 +1,5 @@
 <script setup>
-import { reactive, onMounted, ref, computed } from 'vue'
+import { reactive, onMounted, ref, computed, watch } from 'vue'
 import { useReservationStore } from '@/stores/reservationStore'
 import { ElMessageBox, ElMessage, ElNotification } from 'element-plus'
 import ReservationDashboard from '@/components/reservations/ReservationDashboard.vue'
@@ -169,6 +169,16 @@ const activeReservations = computed(() => {
   ).length
 })
 
+const selectedCabin = computed(() => {
+  return cabins.value.find((cabin) => cabin.id === form.cabin_id)
+})
+
+watch(selectedCabin, (cabin) => {
+  if (cabin && form.gests > cabin.capacity) {
+    form.guests = cabin.capacity
+  }
+})
+
 </script>
 
 <template>
@@ -188,6 +198,7 @@ const activeReservations = computed(() => {
       :errors="errors"
       :editing-id="editingId"
       :cabins="cabins"
+      :selected-cabin="selectedCabin"
       @submit="submitForm"
       @reset="resetForm"
     />
