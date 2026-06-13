@@ -11,6 +11,9 @@ class ReservationValidationTest extends TestCase
 {
     use RefreshDatabase;
 
+/**
+ * DONT ALLOW GUEST UNDER CAPACITY
+ */
 
     public function test_guests_cannot_exceed_cabin_capacity(): void
     {
@@ -42,6 +45,11 @@ class ReservationValidationTest extends TestCase
         ]);
     }
 
+
+/**
+ * DONT ALLOW CABIN UNAVAILABLE
+ */
+
     public function test_unavailable_cabin_cannot_be_reserved(): void
     {
         $cabin = Cabin::create([
@@ -71,6 +79,10 @@ class ReservationValidationTest extends TestCase
             'guest_email' => 'juan@example.com',
         ]);
     }
+
+/**
+ * DONT ALLOW OVERLAP DATES
+ */
 
     public function test_cabin_cannot_be_reserved_twice_on_same_dates(): void
     {
@@ -114,5 +126,90 @@ class ReservationValidationTest extends TestCase
         ]);
     }
 
+    /**
+     * ALLOW CREATE VALID RESERVATION
+     */
+    
+    public function test_valid_reservation_can_be_created(): void
+    {
+        $cabin = Cabin::create([
+            'name' => 'Cabin A',
+            'capacity' => 4,
+            'description' => 'Test cabin',
+            'status' => 'available',
+        ]);
+
+        $response = $this->postJson('/api/reservations', [
+            'cabin_id' => $cabin->id,
+            'guest_name' => 'Valid Guest',
+            'guest_email' => 'valid@example.com',
+            'guest_phone' => '+56933333333',
+            'check_in' => '2026-07-20',
+            'check_out' => '2026-07-22',
+            'guests' => 2,
+            'status' => 'confirmed',
+            'notes' => 'Valid reservation test',
+        ]);
+
+        $response->assertSuccessful();
+
+        $this->assertDatabaseHas('reservations', [
+            'guest_email' => 'valid@example.com',
+            'cabin_id' => $cabin->id,
+            'guests' => 2,
+        ]);
+    }
+
+    /**
+     * ALLOW UPDATE VALID RESERVATION
+     */
+
+    public function test_valid_reservation_can_be_updated(): void
+    {
+        $cabin = Cabin::create([
+            'name' => 'Cabin A',
+            'capacity' => 4,
+            'description' => 'Test cabin',
+            'status' => 'available',
+        ]);
+
+        $createResponse = $this->postJson('/api/reservations', [
+            'cabin_id' => $cabin->id,
+            'guest_name' => 'Original Guest',
+            'guest_email' => 'original@example.com',
+            'guest_phone' => '+56944444444',
+            'check_in' => '2026-07-20',
+            'check_out' => '2026-07-22',
+            'guests' => 2,
+            'status' => 'pending',
+            'notes' => 'Original reservation',
+        ]);
+
+        $createResponse->assertSuccessful();
+
+        $reservationId = $createResponse->json('id');
+
+        $response = $this->putJson('/api/reservations/' . $reservationId, [
+            'cabin_id' => $cabin->id,
+            'guest_name' => 'Updated Guest',
+            'guest_email' => 'updated@example.com',
+            'guest_phone' => '+56955555555',
+            'check_in' => '2026-07-21',
+            'check_out' => '2026-07-23',
+            'guests' => 3,
+            'status' => 'confirmed',
+            'notes' => 'Updated reservation',
+        ]);
+
+        $response->assertSuccessful();
+
+        $this->assertDatabaseHas('reservations', [
+            'id' => $reservationId,
+            'guest_name' => 'Updated Guest',
+            'guest_email' => 'updated@example.com',
+            'guests' => 3,
+            'status' => 'confirmed',
+        ]);
+    }
 
 }
