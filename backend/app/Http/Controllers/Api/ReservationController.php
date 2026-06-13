@@ -70,7 +70,7 @@ class ReservationController extends Controller
         ], 422);
     }
 
-return Reservation::create($data)->load('cabin');
+return response()->json(Reservation::create($data)->load('cabin'), 201);
 }
 
     /**
@@ -136,7 +136,7 @@ return Reservation::create($data)->load('cabin');
 
         $reservation->update($data);
 
-        return $reservation->load('cabin');
+        return response()->json($reservation->load('cabin'), 200);
     }
 
     /**

@@ -12,4 +12,4 @@ Route::get('/user', function (Request $request) {
 
 Route::apiResource('reservations', ReservationController::class);
 
-Route::get('/cabins', [CabinController::class, 'index']);
+Route::apiResource('cabins', CabinController::class);
