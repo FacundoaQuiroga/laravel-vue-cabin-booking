@@ -11,9 +11,6 @@ class ReservationValidationTest extends TestCase
 {
     use RefreshDatabase;
 
-/**
- * DONT ALLOW GUEST UNDER CAPACITY
- */
 
     public function test_guests_cannot_exceed_cabin_capacity(): void
     {
@@ -46,9 +43,7 @@ class ReservationValidationTest extends TestCase
     }
 
 
-/**
- * DONT ALLOW CABIN UNAVAILABLE
- */
+
 
     public function test_unavailable_cabin_cannot_be_reserved(): void
     {
@@ -80,9 +75,6 @@ class ReservationValidationTest extends TestCase
         ]);
     }
 
-/**
- * DONT ALLOW OVERLAP DATES
- */
 
     public function test_cabin_cannot_be_reserved_twice_on_same_dates(): void
     {
@@ -103,7 +95,7 @@ class ReservationValidationTest extends TestCase
             'guests' => 2,
             'status' => 'confirmed',
             'notes' => null,
-        ])->assertStatus(201);
+        ])->assertCreated();
 
         $response = $this->postJson('/api/reservations', [
             'cabin_id' => $cabin->id,
@@ -126,9 +118,6 @@ class ReservationValidationTest extends TestCase
         ]);
     }
 
-    /**
-     * ALLOW CREATE VALID RESERVATION
-     */
     
     public function test_valid_reservation_can_be_created(): void
     {
@@ -151,7 +140,7 @@ class ReservationValidationTest extends TestCase
             'notes' => 'Valid reservation test',
         ]);
 
-        $response->assertSuccessful();
+        $response->assertCreated();
 
         $this->assertDatabaseHas('reservations', [
             'guest_email' => 'valid@example.com',
@@ -160,10 +149,7 @@ class ReservationValidationTest extends TestCase
         ]);
     }
 
-    /**
-     * ALLOW UPDATE VALID RESERVATION
-     */
-
+    
     public function test_valid_reservation_can_be_updated(): void
     {
         $cabin = Cabin::create([
@@ -185,7 +171,7 @@ class ReservationValidationTest extends TestCase
             'notes' => 'Original reservation',
         ]);
 
-        $createResponse->assertSuccessful();
+        $createResponse->assertCreated();
 
         $reservationId = $createResponse->json('id');
 
@@ -201,7 +187,7 @@ class ReservationValidationTest extends TestCase
             'notes' => 'Updated reservation',
         ]);
 
-        $response->assertSuccessful();
+        $response->assertOk();
 
         $this->assertDatabaseHas('reservations', [
             'id' => $reservationId,
