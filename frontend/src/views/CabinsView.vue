@@ -4,12 +4,13 @@ import api from '@/api/axios'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import CabinForm from '@/components/cabins/CabinForm.vue'
 import CabinTable from '@/components/cabins/CabinTable.vue'
+import { useCabinStore } from '@/stores/cabinStore'
 
-
+const cabinStore = useCabinStore()
 
 const errors =reactive({})
 
-const cabins = ref([])
+//esto ahora lo traigo de cabinStore const cabins = ref([])
 
 const editingId = ref(null)
 
@@ -36,13 +37,8 @@ const editCabin = (cabin) => {
     form.status = cabin.status
 }
 
-const fetchCabins = async () => {
-    const response = await api.get('/cabins')
-    cabins.value = response.data
-}
-
 onMounted(async () => {
-    fetchCabins()
+    await cabinStore.fetchCabins()
 
 })
 
@@ -53,12 +49,12 @@ const onSubmit = async () => {
 
     try {
         if (isEditing) {
-            await api.put(`/cabins/${editingId.value}`, form)
+            await cabinStore.updateCabin(editingId.value, form)
         } else {
-            await api.post('/cabins', form)
+            await cabinStore.createCabin(form)
         }
 
-        await fetchCabins()
+        cabinStore.fetchCabins()
 
         ElMessage.success(isEditing ? 'Cabaña actualizada' : 'Cabaña creada')
 
@@ -89,9 +85,8 @@ const deleteCabin = async (id) => {
             type: 'warning',
             }
         )
-            
-        await api.delete(`/cabins/${id}`)
-        await fetchCabins()
+        await cabinStore.deleteCabin(id)
+        cabinStore.fetchCabins()
 
         ElMessage.success('Cabaña eliminada')
     } catch(error){
@@ -117,7 +112,8 @@ const deleteCabin = async (id) => {
         <hr style="margin: 40px 0" />
 
         <CabinTable
-            :cabins="cabins"
+            :cabins="cabinStore.cabins"
+            :loading="cabinStore.loading"
             @edit="editCabin"
             @delete="deleteCabin"
         />

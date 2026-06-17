@@ -1,6 +1,7 @@
 <script setup>
 defineProps({
     cabins: Array,
+    loading: Boolean,
 })
 
 defineEmits(['edit', 'delete'])
@@ -13,7 +14,7 @@ defineEmits(['edit', 'delete'])
             <template #header>
                 <strong>Cabañas Registradas</strong>
             </template>
-            <el-table :data="cabins" style="width: 100%">
+            <el-table :data="cabins" v-loading="loading" style="width: 100%">
                 <el-table-column prop="name" label="Nombre" width="100" />
                 <el-table-column prop="capacity" label="Capacidad" width="100" />
                 <el-table-column prop="description" label="Descripcion" width="300" />
