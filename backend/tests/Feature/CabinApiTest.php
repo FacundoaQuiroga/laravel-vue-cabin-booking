@@ -11,11 +11,8 @@ class CabinApiTest extends TestCase
     use RefreshDatabase;
 
     public function test_can_list_cabins(): void {
-        Cabin::create([
+        Cabin::factory()->create([
             'name' => 'Arrayan Cabin',
-            'capacity' => 2,
-            'description' => 'small cabin for couples.',
-            'status' => 'available',
         ]);
 
         $response = $this->getJson('/api/cabins');
@@ -26,17 +23,30 @@ class CabinApiTest extends TestCase
         ]);
     }
 
-    public function test_can_update_cabins(): void {
+    public function test_can_create_cabin(): void {
 
-        $cabin = Cabin::create([
+        $response = $this->postJson('/api/cabins', [
             'name' => 'Coihue Cabin',
-            'capacity' => 3,
-            'description' => 'same description',
+            'capacity' => 4,
+            'description' => 'Family cabin with mountain view.',
             'status' => 'available',
         ]);
 
+        $response->assertCreated();
+
+        $this->assertDatabaseHas('cabins', [
+            'name' => 'Coihue Cabin',
+            'capacity' => 4,
+            'status' => 'available',
+        ]);
+    }
+
+    public function test_can_update_cabins(): void {
+
+        $cabin = Cabin::factory()->create();
+
         $response = $this->putJson('/api/cabins/' . $cabin->id, [
-            'name' => 'HArrayan Cabin',
+            'name' => 'Arrayan Cabin Updated',
             'capacity' => 5,
             'description' => 'another description',
             'status' => 'unavailable',
@@ -46,7 +56,7 @@ class CabinApiTest extends TestCase
 
         $this->assertDatabaseHas('cabins', [
             'id' => $cabin->id,
-            'name' => 'HArrayan Cabin',
+            'name' => 'Arrayan Cabin Updated',
             'capacity' => 5,
             'description' => 'another description',
             'status' => 'unavailable',
@@ -56,12 +66,7 @@ class CabinApiTest extends TestCase
 
     public function test_can_delete_cabins(): void {
         
-        $cabin = Cabin::create([
-            'name' => 'Lenga Cabin',
-            'capacity' => 3,
-            'description' => 'same description',
-            'status' => 'available',
-        ]);
+        $cabin = Cabin::factory()->create();
 
         $response = $this->deleteJson('/api/cabins/' . $cabin->id);
 

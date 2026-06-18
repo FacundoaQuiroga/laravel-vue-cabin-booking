@@ -14,10 +14,8 @@ class ReservationValidationTest extends TestCase
 
     public function test_guests_cannot_exceed_cabin_capacity(): void
     {
-        $cabin = Cabin::create([
-            'name' => 'Cabin A',
+        $cabin = Cabin::factory()->create([
             'capacity' => 4,
-            'description' => 'Test cabin',
             'status' => 'available',
         ]);
 
@@ -47,10 +45,8 @@ class ReservationValidationTest extends TestCase
 
     public function test_unavailable_cabin_cannot_be_reserved(): void
     {
-        $cabin = Cabin::create([
-            'name' => 'Cabin A',
+        $cabin = Cabin::factory()->create([
             'capacity' => 4,
-            'description' => 'Test cabin',
             'status' => 'unavailable',
         ]);
 
@@ -78,12 +74,7 @@ class ReservationValidationTest extends TestCase
 
     public function test_cabin_cannot_be_reserved_twice_on_same_dates(): void
     {
-        $cabin = Cabin::create([
-            'name' => 'Cabin A',
-            'capacity' => 4,
-            'description' => 'Test cabin',
-            'status' => 'available',
-        ]);
+        $cabin = Cabin::factory()->create();
 
         $this->postJson('/api/reservations', [
             'cabin_id' => $cabin->id,
@@ -121,12 +112,7 @@ class ReservationValidationTest extends TestCase
     
     public function test_valid_reservation_can_be_created(): void
     {
-        $cabin = Cabin::create([
-            'name' => 'Cabin A',
-            'capacity' => 4,
-            'description' => 'Test cabin',
-            'status' => 'available',
-        ]);
+        $cabin = Cabin::factory()->create();
 
         $response = $this->postJson('/api/reservations', [
             'cabin_id' => $cabin->id,
@@ -152,12 +138,7 @@ class ReservationValidationTest extends TestCase
     
     public function test_valid_reservation_can_be_updated(): void
     {
-        $cabin = Cabin::create([
-            'name' => 'Cabin A',
-            'capacity' => 4,
-            'description' => 'Test cabin',
-            'status' => 'available',
-        ]);
+        $cabin = Cabin::factory()->create();
 
         $createResponse = $this->postJson('/api/reservations', [
             'cabin_id' => $cabin->id,
