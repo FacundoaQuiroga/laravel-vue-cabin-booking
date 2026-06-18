@@ -72,7 +72,7 @@ class CabinApiTest extends TestCase
 
         $response->assertOk();
 
-        $this->assertDatabaseMissing('cabins', [
+        $this->assertSoftDeleted('cabins', [
             'id' => $cabin->id,
         ]);
     }
