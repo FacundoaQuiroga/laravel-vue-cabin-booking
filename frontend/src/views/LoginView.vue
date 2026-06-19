@@ -1,13 +1,36 @@
 <script setup>
+import axios from 'axios'
 import { reactive } from 'vue'
+import { useRouter } from 'vue-router'
+import { ElMessage } from 'element-plus'
+import api from '@/api/axios'
+
+
+const router = useRouter()
 
 const form = reactive({
   email: '',
   password: '',
 })
 
-const onSubmit = () => {
-  console.log('login', form)
+const onSubmit = async () => {
+  try {
+    axios.defaults.withCredentials = true
+    axios.defaults.withXSRFToken = true
+
+    await axios.get('http://localhost:8080/sanctum/csrf-cookie')
+
+    await axios.post('http://localhost:8080/login', form, {
+      headers: {
+        Accept: 'application/json',
+      },
+    })
+
+    ElMessage.success('Login successful')
+    router.push('/admin/reservations')
+  } catch (error) {
+    ElMessage.error(error.response?.data?.message || 'Login failed')
+  }
 }
 </script>
 

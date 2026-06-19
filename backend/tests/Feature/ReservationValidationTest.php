@@ -6,11 +6,18 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use App\Models\Cabin;
+use App\Models\User;
+use Laravel\Sanctum\Sanctum;
 
 class ReservationValidationTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected function setUp(): void {
+        parent::setUp();
+
+        Sanctum::actingAs(User::factory()->create());
+    }
 
     public function test_guests_cannot_exceed_cabin_capacity(): void
     {
