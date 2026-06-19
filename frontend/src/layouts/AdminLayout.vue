@@ -2,6 +2,7 @@
 import axios from 'axios'
 import {ref,onMounted,reactive} from 'vue'
 import api from '@/api/axios'
+import { logout, fetchUser } from '@/api/auth'
 
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
@@ -10,21 +11,15 @@ const router = useRouter()
 
 const user = ref(null)
 
-const logout = async () => {
-  await axios.post('http://localhost:8080/logout', {}, {
-    withCredentials: true,
-    withXSRFToken: true,
-    headers: {
-      Accept: 'application/json',
-    },
-  })
+const handleLogout = async () => {
+  await logout()
 
   ElMessage.success('Sesión cerrada')
   router.push('/login')
 }
 
 onMounted(async () => {
-    const response = await api.get('/user')
+    const response = await fetchUser()
     user.value = response.data
 })
 
@@ -41,7 +36,7 @@ onMounted(async () => {
     <div class="admin-user">
       {{ user?.name }}
     </div>
-    <button class="logout-button" @click="logout">
+    <button class="logout-button" @click="handleLogout">
       Cerrar sesión
     </button>
 
