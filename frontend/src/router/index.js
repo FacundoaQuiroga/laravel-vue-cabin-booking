@@ -4,6 +4,8 @@ import AdminLayout from '@/layouts/AdminLayout.vue'
 import HomeView from '@/views/HomeView.vue'
 import ReservationsView from '@/views/ReservationsView.vue'
 import CabinsView from '@/views/CabinsView.vue'
+import LoginView from '@/views/LoginView.vue'
+
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -16,6 +18,11 @@ const router = createRouter({
           path: '',
           name: 'home',
           component: HomeView,
+        },
+        {
+          path: 'login',
+          name: 'login',
+          component: LoginView,
         },
       ],
     },
