@@ -6,10 +6,11 @@ use App\Http\Controllers\Api\ReservationController;
 use App\Http\Controllers\Api\CabinController;
 
 
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/user', function (Request $request) {
+        return $request->user();
+    });
 
-Route::apiResource('reservations', ReservationController::class);
-
-Route::apiResource('cabins', CabinController::class);
+    Route::apiResource('reservations', ReservationController::class);
+    Route::apiResource('cabins', CabinController::class);
+});
