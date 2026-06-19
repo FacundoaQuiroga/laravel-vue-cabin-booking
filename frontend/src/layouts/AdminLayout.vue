@@ -1,9 +1,14 @@
 <script setup>
 import axios from 'axios'
+import {ref,onMounted,reactive} from 'vue'
+import api from '@/api/axios'
+
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 
 const router = useRouter()
+
+const user = ref(null)
 
 const logout = async () => {
   await axios.post('http://localhost:8080/logout', {}, {
@@ -14,9 +19,15 @@ const logout = async () => {
     },
   })
 
-  ElMessage.success('Logged out')
+  ElMessage.success('Sesión cerrada')
   router.push('/login')
 }
+
+onMounted(async () => {
+    const response = await api.get('/user')
+    user.value = response.data
+})
+
 </script>
 
 <template>
@@ -26,7 +37,10 @@ const logout = async () => {
 
       <router-link to="/admin/reservations" class="nav-link">Reservas</router-link>
       <router-link to="/admin/cabins" class="nav-link">Cabañas</router-link>
-    
+      
+    <div class="admin-user">
+      {{ user?.name }}
+    </div>
     <button class="logout-button" @click="logout">
       Cerrar sesión
     </button>
@@ -87,5 +101,11 @@ const logout = async () => {
 
 .logout-button:hover {
   background: rgba(0, 0, 0, 0.18);
+}
+.admin-user {
+  padding: 14px 24px;
+  margin-top: 24px;
+  font-size: 14px;
+  opacity: 0.9;
 }
 </style>
