@@ -13,6 +13,7 @@ I added basic admin authentication, cabin management, reservation validation and
 ## Stack
 
 Laravel 13, PHP 8.3, Vue 3, Pinia, Element Plus, MySQL, Docker, Laravel Sanctum and PHPUnit.
+
 [![Laravel](https://img.shields.io/badge/Laravel-FF2D20?style=flat&logo=laravel&logoColor=white)](https://laravel.com)
 [![PHP](https://img.shields.io/badge/PHP-777BB4?style=flat&logo=php&logoColor=white)](https://www.php.net)
 [![Vue.js](https://img.shields.io/badge/Vue.js-4FC08D?style=flat&logo=vuedotjs&logoColor=white)](https://vuejs.org)
