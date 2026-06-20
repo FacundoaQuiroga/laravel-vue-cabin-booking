@@ -2,6 +2,8 @@
 
 Small cabin reservation system built with Laravel and Vue.
 
+![Cabin Reservation Platform](docs/images/project-vue.png)
+
 ## About
 
 This project is a simple admin panel for managing cabins and reservations.
