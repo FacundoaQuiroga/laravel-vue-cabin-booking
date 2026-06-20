@@ -1,46 +1,40 @@
-/ Cabin Reservation Platform
+# Cabin Reservation Platform
 
-Full-stack cabin reservation management system built with Laravel 13, Vue 3, MySQL and Docker.
+Small cabin reservation system built with Laravel and Vue.
 
-/ Description
+## About
 
-This project is a cabin booking management platform focused on creating, editing, filtering and managing reservations through a REST API and a Vue-based admin interface.
+This project is a simple admin panel for managing cabins and reservations.
 
-It includes reservation status management, date validation to prevent overlapping bookings, and a Dockerized local development environment.
+The backend is built with Laravel and exposes a REST API. The frontend is built with Vue 3 and uses Pinia to manage state.
 
-/ Technologies
+I added basic admin authentication, cabin management, reservation validation and feature tests for the main rules of the system.
 
-- Backend: Laravel 13, PHP 8.3
-- Frontend: Vue 3, Vite, Pinia, Element Plus
-- Database: MySQL
-- API: RESTful endpoints
-- Dev environment: Docker, Nginx, Redis, Mailhog
-- Tools: Git, Composer, npm, 
+## Stack
 
-/ Features
+Laravel 13, PHP 8.3, Vue 3, Pinia, Element Plus, MySQL, Docker, Laravel Sanctum and PHPUnit.
 
-- Create, update and delete cabin reservations
-- List reservations from a Laravel REST API
-- Prevent overlapping reservations for the same cabin
-- Manage reservation status: pending, confirmed and cancelled
-- Filter reservations by guest name and status
-- Reservation dashboard with status counters
-- Dockerized development environment
-- Environment variables handled through .env.example
-- Testing phpunit
+## Main Features
 
-/ Project Structure
+Cabin CRUD, reservation CRUD, admin login, protected admin routes, reservation filters, dashboard counters, and validations for overlapping dates, cabin capacity and unavailable cabins.
 
-backend  =  Laravel API
-frontend =  Vue 3 APP
-docker   =  Docker configuration
-docker-compose.yml
+## Project Structure
 
-/ Running Tests
+backend: Laravel API  
+frontend: Vue app  
+docker: Docker files  
+docker-compose.yml: Local services
 
-This project includes Laravel feature tests for reservation business rules.
+## Tests
 
-Run the test suite with:
+Run all tests:
 
-- bash
 docker compose exec php php artisan test
+
+Run reservation tests:
+
+docker compose exec php php artisan test --filter=ReservationValidationTest
+
+Run cabin tests:
+
+docker compose exec php php artisan test --filter=CabinApiTest
